@@ -21,7 +21,8 @@ import java.util.stream.Stream;
 import static java.lang.Thread.sleep;
 
 /**
-* Query personajes de DC con Telekinesis 'db.filteredCharactes.find({$and:[{"publisher": "DC Comics"},{"powers": {$in: ["Telekinesis"]}}]}).pretty()'
+ * Query personajes de DC con Telekinesis 'db.filteredCharactes.find({$and:[{"publisher": "DC Comics"},{"powers": {$in: ["Telekinesis"]}}]}).pretty()'
+ * Query comic con mas personajes ' db.filteredComics.aggregate([ {$unwind: "$characterIds"}, { $group: { _id : "$title", len: {$sum : 1} } }, { $sort : { len : -1 }}, { $limit : 25 } ])'
  */
 public class Main {
 
