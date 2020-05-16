@@ -266,6 +266,9 @@ public class Main {
         System.out.println(characters.keySet());
         database.getCollectionNames().forEach(System.out::println);
 
+        Menu m = new Menu();
+            m.selectQuery();
+           
 
     }
 }
