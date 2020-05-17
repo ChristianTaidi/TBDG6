@@ -23,6 +23,7 @@ import static java.lang.Thread.sleep;
 /**
  * Query personajes de DC con Telekinesis 'db.filteredCharactes.find({$and:[{"publisher": "DC Comics"},{"powers": {$in: ["Telekinesis"]}}]}).pretty()'
  * Query comic con mas personajes ' db.filteredComics.aggregate([ {$unwind: "$characterIds"}, { $group: { _id : "$title", len: {$sum : 1} } }, { $sort : { len : -1 }}, { $limit : 25 } ])'
+ * Query Lista decreciente de color de ojos ' db.characters_info.aggregate({$group : { _id: '$EyeColor', count: {$sum : 1}}},{$sort: {count: -1}}) '
  */
 public class Main {
 
