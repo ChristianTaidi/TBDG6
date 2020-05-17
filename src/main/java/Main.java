@@ -24,6 +24,13 @@ import static java.lang.Thread.sleep;
  * Query personajes de DC con Telekinesis 'db.filteredCharactes.find({$and:[{"publisher": "DC Comics"},{"powers": {$in: ["Telekinesis"]}}]}).pretty()'
  * Query comic con mas personajes ' db.filteredComics.aggregate([ {$unwind: "$characterIds"}, { $group: { _id : "$title", len: {$sum : 1} } }, { $sort : { len : -1 }}, { $limit : 25 } ])'
  * Query Lista decreciente de color de ojos ' db.characters_info.aggregate({$group : { _id: '$EyeColor', count: {$sum : 1}}},{$sort: {count: -1}}) '
+   Query para obtener los comics en los que sale un personaje: 
+        var character = db.characters.findOne({'name' : /Captain America/})
+        db.charactersToComics.find({"characterID": character.characterID}).pretty()
+   Query para obtener el ratio entre hombres y mujeres en un universo concreto(En este caso Marvel)
+        var males= db.marvel_dc_characters.find({$and:[{"Gender": "Male"},{"Universe": "Marvel"}]}).count()
+        var females= db.marvel_dc_characters.find({$and:[{"Gender": "Female"},{"Universe": "Marvel"}]}).count()
+
  */
 public class Main {
 
