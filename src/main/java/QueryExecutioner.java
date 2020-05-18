@@ -53,17 +53,8 @@ public class QueryExecutioner {
     }
 
     void executeEyeColorFrequencies(){
-       // db.characters_info.aggregate({$group : { _id: '$EyeColor', count: {$sum : 1}}},{$sort: {count: -1}})
-
-       DBCollection collection = database.getCollection("filteredCharacters");
-      // DBObject group = new BasicDBObject("$group", new BasicDBObject("_id", "$EyeColor").append("count", new BasicDBObject("$sum", 1)));
-      // DBObject sort = new BasicDBObject("$sort", new BasicDBObject("count", -1));
-       //AggregationOptions aggregation = newAggregation(group, sort);
-       //AggregationOutput output = collection.aggregate(group,sort).withOptions(newAggregationOptions().cursor(new Document()).build());
-       //for (DBObject result : output.results()) {
-        //System.out.println("Resultado=" + result);
-        //}
-
+        //db.characters_info.aggregate({$group : { _id: '$EyeColor', count: {$sum : 1}}},{$sort: {count: -1}})
+        DBCollection collection = database.getCollection("filteredCharacters");
         DBObject groupFields = new BasicDBObject( "_id", "$eyeColor");
         groupFields.put("count", new BasicDBObject( "$sum", 1));
         DBObject group = new BasicDBObject("$group", groupFields );
@@ -73,26 +64,32 @@ public class QueryExecutioner {
         pipeline.add(group);
         pipeline.add(sort);
         AggregationOptions aggregationOptions = AggregationOptions.builder().outputMode(AggregationOptions.OutputMode.CURSOR).build();
-        //AggregationOutput output 
         Iterator<DBObject> cursor = collection.aggregate(pipeline,aggregationOptions); 
         while(cursor.hasNext()){
             System.out.println(cursor.next());
         }
-        //collection.aggregate(group, sort);
-       /* for (DBObject result : output.results()) {
-            System.out.println("Resultado=" + result);
-        }*/
-        //System.out.println( output.results() );
-                //BasicDBObject query = new BasicDBObject();
-        //        query.put("company","Baeldung");s
-        //        DBCursor cursor = collection.find(query);
-        //        while (cursor.hasNext()){
-            //      System.out.println(cursor.next());
-            //    }
     }
 
     void executeComicWithHighestNumberOfCharacters(){
-
+        // db.filteredComics.aggregate([ {$unwind: "$characterIds"}, { $group: { _id : "$title", len: {$sum : 1} } }, { $sort : { len : -1 }}, { $limit : 1 } ])
+        DBCollection collection = database.getCollection("filteredComics");
+        DBObject groupFields = new BasicDBObject( "_id", "$title");
+        groupFields.put("count", new BasicDBObject( "$sum", 1));
+        DBObject group = new BasicDBObject("$group", groupFields );
+        DBObject sortFields = new BasicDBObject("count", -1);
+        DBObject sort = new BasicDBObject("$sort", sortFields );
+        DBObject limit = new BasicDBObject("$limit", 1 );
+        DBObject unwind = new BasicDBObject("$unwind", "$characterIds" );
+        List<DBObject> pipeline= new ArrayList();
+        pipeline.add(unwind);
+        pipeline.add(group);
+        pipeline.add(sort);
+        pipeline.add(limit);
+        AggregationOptions aggregationOptions = AggregationOptions.builder().outputMode(AggregationOptions.OutputMode.CURSOR).build();
+        Iterator<DBObject> cursor = collection.aggregate(pipeline,aggregationOptions); 
+        while(cursor.hasNext()){
+            System.out.println(cursor.next());
+        }
     }
 
      void executePublisherWithMostBaldCharacters(){
@@ -373,7 +370,7 @@ public class QueryExecutioner {
         database.getCollection("filteredComics").insert(comicList);
         database.getCollection("comics").drop();
         database.getCollection("characters").drop();
-        //database.getCollection("characters_info").drop();
+        database.getCollection("characters_info").drop();
         database.getCollection("characters_stats").drop();
         database.getCollection("charactersToComics").drop();
         database.getCollection("marvel_dc_characters").drop();
