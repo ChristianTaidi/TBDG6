@@ -47,7 +47,7 @@ public class QueryExecutioner {
 
             while (finalCursor.hasNext()){
                 DBObject comicResult = finalCursor.next();
-                System.out.println(finalCursor.next().toString());
+                System.out.println(comicResult.toString());
             }
         }
     }
