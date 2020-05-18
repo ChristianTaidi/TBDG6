@@ -93,6 +93,8 @@ public class QueryExecutioner {
         MongoClient mongoClient = new MongoClient("localhost",27017);
 
         DB database = mongoClient.getDB("test");
+        database.getCollection("filteredCharacters").drop();
+        database.getCollection("filteredComics").drop();
         mongoClient.getDatabaseNames().forEach(System.out::println);
         System.out.println(database.toString());
         CsvSchema csvSchema = CsvSchema.builder().setUseHeader(true).build();
@@ -320,6 +322,13 @@ public class QueryExecutioner {
 
         database.getCollection("filteredCharacters").insert(charList);
         database.getCollection("filteredComics").insert(comicList);
+        database.getCollection("comics").drop();
+        database.getCollection("characters").drop();
+        database.getCollection("characters_info").drop();
+        database.getCollection("characters_stats").drop();
+        database.getCollection("charactersToComics").drop();
+        database.getCollection("marvel_dc_characters").drop();
+        database.getCollection("superheroes_power_matrix").drop();
 
         System.out.println(characters.keySet());
         database.getCollectionNames().forEach(System.out::println);
