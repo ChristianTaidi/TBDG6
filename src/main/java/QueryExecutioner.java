@@ -4,7 +4,10 @@ import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvParser;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import com.mongodb.*;
+import com.mongodb.client.MongoCollection;
 import com.mongodb.util.JSON;
+
+import org.bson.Document;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -21,14 +24,53 @@ import static java.lang.Thread.sleep;
 
 public class QueryExecutioner {
 
-    public QueryExecutioner(){}
+    private DB database;
+    public QueryExecutioner(){
+        MongoClient mongoClient = new MongoClient("localhost",27017);
+        database = mongoClient.getDB("test");
+    }
 
     void executeListOfComicsOfACharacter(String charName){
+        BasicDBObject query = new BasicDBObject("name",charName);
+        DBCursor cursor = database.getCollection("filteredCharacters").find(query);
+        DBObject result = null;
+        if(cursor.hasNext())
+            result=cursor.next();
 
+        if(result != null){
+            int charId = (Integer)result.get("id");
+            System.out.println("Finding ->"+charName+ "id="+charId);
+
+            BasicDBObject queryComics = new BasicDBObject();
+            queryComics.put("characterIds",new BasicDBObject("$in",Arrays.asList(charId)));
+            DBCursor finalCursor = database.getCollection("filteredComics").find(queryComics);
+
+            while (finalCursor.hasNext()){
+                DBObject comicResult = finalCursor.next();
+                System.out.println(finalCursor.next().toString());
+            }
+        }
     }
 
     void executeEyeColorFrequencies(){
+       // db.characters_info.aggregate({$group : { _id: '$EyeColor', count: {$sum : 1}}},{$sort: {count: -1}})
 
+       DBCollection collection = database.getCollection("characters_info");
+       DBObject group = new BasicDBObject("$group", new BasicDBObject("_id", "$EyeColor").append("count", new BasicDBObject("$sum", 1)));
+       DBObject sort = new BasicDBObject("$sort", new BasicDBObject("count", -1));
+       /*AggregationOptions aggregation = newAggregation(group, sort);
+       AggregationOutput output = collection.aggregate(group,sort).withOptions(newAggregationOptions().cursor(new Document()).build());
+       for (DBObject result : output.results()) {
+        System.out.println("Resultado=" + result);
+        }
+
+        DBObject groupFields = new BasicDBObject( "_id", "$EyeColor");*/
+                //BasicDBObject query = new BasicDBObject();
+        //        query.put("company","Baeldung");s
+        //        DBCursor cursor = collection.find(query);
+        //        while (cursor.hasNext()){
+            //      System.out.println(cursor.next());
+            //    }
     }
 
     void executeComicWithHighestNumberOfCharacters(){
@@ -104,11 +146,19 @@ public class QueryExecutioner {
                             String name = "";
                             Character current = new Character(id,name);
                             if(entry.get("name")!=null&&!characters.containsKey(entry.get("name"))){
+                                if(entry.get("name").equals("Captain America")){
+                                    System.out.println("Captain America");
+                                }
                                 id = Long.parseLong(entry.get("characterID"));
                                 name = entry.get("name");
+                                current.setName(name);
+                                current.setId(id);
                             }else if(output.getName().equals("characters_info.json")){
-
+                                if(entry.get("Name").equals("Captain America")){
+                                    System.out.println("Captain America");
+                                }
                                 if(!characters.containsKey(entry.get("Name"))){
+
                                     id = Long.parseLong(entry.get("ID"));
                                 }else{
                                     id = characters.get(entry.get("Name")).getId();
@@ -173,6 +223,7 @@ public class QueryExecutioner {
                     if(output.getName().startsWith("charactersToComics")){
                         readAllList.stream().forEach(entry->{
                             long id = 0;
+
                             try {
                                 id = Long.parseLong(entry.get("comicID"));
                             }catch (NumberFormatException e){
@@ -220,6 +271,9 @@ public class QueryExecutioner {
                         Long id = 0L;
                         String name = "";
                         Character current;
+                        if(entry.get("Name").equals("Captain America")){
+                            System.out.println("Captain America");
+                        }
                         if(!characters.containsKey(entry.get("Name"))){
                             id = Long.parseLong(entry.get("ID"));
                             current = new Character(id,entry.get("Name"));
