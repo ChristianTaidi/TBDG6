@@ -4,6 +4,7 @@ import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvParser;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import com.mongodb.*;
+import com.mongodb.client.MongoCollection;
 import com.mongodb.util.JSON;
 
 import org.bson.Document;
@@ -22,6 +23,7 @@ import java.util.stream.Stream;
 import static java.lang.Thread.sleep;
 
 public class QueryExecutioner {
+
     private DB database;
     public QueryExecutioner(){
         MongoClient mongoClient = new MongoClient("localhost",27017);
@@ -29,7 +31,25 @@ public class QueryExecutioner {
     }
 
     void executeListOfComicsOfACharacter(String charName){
+        BasicDBObject query = new BasicDBObject("name",charName);
+        DBCursor cursor = database.getCollection("filteredCharacters").find(query);
+        DBObject result = null;
+        if(cursor.hasNext())
+            result=cursor.next();
 
+        if(result != null){
+            int charId = (Integer)result.get("id");
+            System.out.println("Finding ->"+charName+ "id="+charId);
+
+            BasicDBObject queryComics = new BasicDBObject();
+            queryComics.put("characterIds",new BasicDBObject("$in",Arrays.asList(charId)));
+            DBCursor finalCursor = database.getCollection("filteredComics").find(queryComics);
+
+            while (finalCursor.hasNext()){
+                DBObject comicResult = finalCursor.next();
+                System.out.println(finalCursor.next().toString());
+            }
+        }
     }
 
     void executeEyeColorFrequencies(){
@@ -92,7 +112,6 @@ public class QueryExecutioner {
     }
 
     void executeAverageIntelligenceHumansVsCyborgs(){
-        
     }
 
     void executeFirstCharacterWithSuperpowers(){
@@ -145,11 +164,19 @@ public class QueryExecutioner {
                             String name = "";
                             Character current = new Character(id,name);
                             if(entry.get("name")!=null&&!characters.containsKey(entry.get("name"))){
+                                if(entry.get("name").equals("Captain America")){
+                                    System.out.println("Captain America");
+                                }
                                 id = Long.parseLong(entry.get("characterID"));
                                 name = entry.get("name");
+                                current.setName(name);
+                                current.setId(id);
                             }else if(output.getName().equals("characters_info.json")){
-
+                                if(entry.get("Name").equals("Captain America")){
+                                    System.out.println("Captain America");
+                                }
                                 if(!characters.containsKey(entry.get("Name"))){
+
                                     id = Long.parseLong(entry.get("ID"));
                                 }else{
                                     id = characters.get(entry.get("Name")).getId();
@@ -214,6 +241,7 @@ public class QueryExecutioner {
                     if(output.getName().startsWith("charactersToComics")){
                         readAllList.stream().forEach(entry->{
                             long id = 0;
+
                             try {
                                 id = Long.parseLong(entry.get("comicID"));
                             }catch (NumberFormatException e){
@@ -261,6 +289,9 @@ public class QueryExecutioner {
                         Long id = 0L;
                         String name = "";
                         Character current;
+                        if(entry.get("Name").equals("Captain America")){
+                            System.out.println("Captain America");
+                        }
                         if(!characters.containsKey(entry.get("Name"))){
                             id = Long.parseLong(entry.get("ID"));
                             current = new Character(id,entry.get("Name"));
