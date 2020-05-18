@@ -37,6 +37,23 @@ public class Main {
 
     public static void main(String[] args){
 
+
+//        database.createCollection("test",null);
+//        DBCollection collection = database.getCollection("test");
+//        BasicDBObject document = new BasicDBObject();
+//        document.put("name", "Shubham");
+//        document.put("company", "Baeldung");
+//        collection.insert(document);
+//        database.getCollectionNames().forEach(System.out::println);
+//        BasicDBObject query = new BasicDBObject();
+//        query.put("company","Baeldung");
+//        DBCursor cursor = collection.find(query);
+//        while (cursor.hasNext()){
+//            System.out.println(cursor.next());
+//        }
+//        collection.drop();
+
+
         Menu m = new Menu();
             m.selectQuery();
            

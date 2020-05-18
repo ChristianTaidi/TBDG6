@@ -20,6 +20,7 @@ import java.util.stream.Stream;
 import static java.lang.Thread.sleep;
 
 public class QueryExecutioner {
+
     public QueryExecutioner(){}
 
     void executeListOfComicsOfACharacter(String charName){
@@ -51,7 +52,6 @@ public class QueryExecutioner {
     }
 
     void executeAverageIntelligenceHumansVsCyborgs(){
-        
     }
 
     void executeFirstCharacterWithSuperpowers(){
