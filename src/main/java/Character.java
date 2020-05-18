@@ -14,6 +14,12 @@ public class Character {
     private String race;
     private float height;
     private float weight;
+    private String status;
+    private String appearances;
+    private String firstAppearance;
+    private String year;
+    private String universe;
+    private String identity;
     private Map<String,String> stats;
     private List<String> powers;
 
@@ -155,5 +161,53 @@ public class Character {
 
     public String getHairColor() {
         return hairColor;
+    }
+
+    public void setFirstAppearance(String firstAppearance) {
+        this.firstAppearance = firstAppearance;
+    }
+
+    public String getFirstAppearance() {
+        return firstAppearance;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public String getAppearances() {
+        return appearances;
+    }
+
+    public void setAppearances(String appearances) {
+        this.appearances = appearances;
+    }
+
+    public String getYear() {
+        return year;
+    }
+
+    public void setYear(String year) {
+        this.year = year;
+    }
+
+    public void setUniverse(String universe) {
+        this.universe = universe;
+    }
+
+    public String getUniverse() {
+        return universe;
+    }
+
+    public void setIdentity(String identity) {
+        this.identity = identity;
+    }
+
+    public String getIdentity() {
+        return identity;
     }
 }
