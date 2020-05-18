@@ -31,6 +31,7 @@ import static java.lang.Thread.sleep;
         var males= db.marvel_dc_characters.find({$and:[{"Gender": "Male"},{"Universe": "Marvel"}]}).count()
         var females= db.marvel_dc_characters.find({$and:[{"Gender": "Female"},{"Universe": "Marvel"}]}).count()
 
+ Personaje mas odiado 'db.filteredCharacters.find({$and:[{"status":"Deceased"},{"appearances":{"$exists":true}}]}).sort({"appearances": 1}).limit(1)'
  */
 public class Main {
 

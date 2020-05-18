@@ -1,3 +1,4 @@
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
@@ -5,6 +6,7 @@ import com.fasterxml.jackson.dataformat.csv.CsvParser;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import com.mongodb.*;
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.model.Indexes;
 import com.mongodb.util.JSON;
 
 import org.bson.Document;
@@ -104,7 +106,18 @@ public class QueryExecutioner {
     }
 
     void executeMostHatedCharacter(){
+        BasicDBObject deceased = new BasicDBObject();
+        deceased.put("status","Deceased");
+        BasicDBObject exists = new BasicDBObject();
+        exists.put("appearances",new BasicDBObject("$exists",true));
 
+        BasicDBObject query = new BasicDBObject();
+        query.put("$and",Arrays.asList(deceased,exists));
+        DBCursor cursor = database.getCollection("filteredCharacters").find(query).sort(new BasicDBObject("appearances",1)).limit(1);
+
+        if (cursor.hasNext()){
+            System.out.println(cursor.next().toString());
+        }
     }
 
     void executeUniverseWithMostClassicComics(){
@@ -164,9 +177,7 @@ public class QueryExecutioner {
                             String name = "";
                             Character current = new Character(id,name);
                             if(entry.get("name")!=null&&!characters.containsKey(entry.get("name"))){
-                                if(entry.get("name").equals("Captain America")){
-                                    System.out.println("Captain America");
-                                }
+
                                 id = Long.parseLong(entry.get("characterID"));
                                 name = entry.get("name");
                                 current.setName(name);
@@ -301,7 +312,11 @@ public class QueryExecutioner {
                         name = entry.get("Name");
 
                         current.setStatus(entry.get("Status"));
-                        current.setAppearances(entry.get("Appearances"));
+                        try {
+                            current.setAppearances(Integer.parseInt(entry.get("Appearances")));
+                        }catch (NumberFormatException nf){
+
+                        }
                         current.setFirstAppearance(entry.get("FirstAppearance"));
                         current.setYear(entry.get("Year"));
                         current.setUniverse(entry.get("Universe"));
@@ -350,6 +365,8 @@ public class QueryExecutioner {
         List<DBObject> charList = new ArrayList<>();
         charStream.forEach(s ->{
             ObjectMapper oMapper = new ObjectMapper();
+            oMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+            oMapper.setSerializationInclusion(JsonInclude.Include.NON_DEFAULT);
             try {
                 charList.add(new BasicDBObject((BasicDBObject) JSON.parse(oMapper.writeValueAsString(s))));
             } catch (JsonProcessingException e) {
@@ -361,6 +378,8 @@ public class QueryExecutioner {
         List<DBObject> comicList = new ArrayList<>();
         comicStream.forEach(s ->{
             ObjectMapper oMapper = new ObjectMapper();
+            oMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+            oMapper.setSerializationInclusion(JsonInclude.Include.NON_DEFAULT);
             try {
                 comicList.add(new BasicDBObject((BasicDBObject)JSON.parse(oMapper.writeValueAsString(s))));
             } catch (JsonProcessingException e) {

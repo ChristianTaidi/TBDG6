@@ -15,7 +15,7 @@ public class Character {
     private float height;
     private float weight;
     private String status;
-    private String appearances;
+    private int appearances;
     private String firstAppearance;
     private String year;
     private String universe;
@@ -179,11 +179,11 @@ public class Character {
         return status;
     }
 
-    public String getAppearances() {
+    public int getAppearances() {
         return appearances;
     }
 
-    public void setAppearances(String appearances) {
+    public void setAppearances(int appearances) {
         this.appearances = appearances;
     }
 
