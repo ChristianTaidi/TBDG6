@@ -16,6 +16,7 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Stream;
@@ -44,11 +45,12 @@ public class QueryExecutioner {
             BasicDBObject queryComics = new BasicDBObject();
             queryComics.put("characterIds",new BasicDBObject("$in",Arrays.asList(charId)));
             DBCursor finalCursor = database.getCollection("filteredComics").find(queryComics);
-
+            System.out.println("---------------------------------------------------------");
             while (finalCursor.hasNext()){
                 DBObject comicResult = finalCursor.next();
                 System.out.println(comicResult.toString());
             }
+            System.out.println("---------------------------------------------------------");
         }
     }
 
@@ -65,9 +67,11 @@ public class QueryExecutioner {
         pipeline.add(sort);
         AggregationOptions aggregationOptions = AggregationOptions.builder().outputMode(AggregationOptions.OutputMode.CURSOR).build();
         Iterator<DBObject> cursor = collection.aggregate(pipeline,aggregationOptions); 
+        System.out.println("---------------------------------------------------------");
         while(cursor.hasNext()){
             System.out.println(cursor.next());
         }
+        System.out.println("---------------------------------------------------------");
     }
 
     void executeComicWithHighestNumberOfCharacters(){
@@ -87,17 +91,49 @@ public class QueryExecutioner {
         pipeline.add(limit);
         AggregationOptions aggregationOptions = AggregationOptions.builder().outputMode(AggregationOptions.OutputMode.CURSOR).build();
         Iterator<DBObject> cursor = collection.aggregate(pipeline,aggregationOptions); 
+        System.out.println("---------------------------------------------------------");
         while(cursor.hasNext()){
             System.out.println(cursor.next());
         }
+        System.out.println("---------------------------------------------------------");
     }
 
      void executePublisherWithMostBaldCharacters(){
 
     }
 
-    void executeMenAndWomenRatioInAConcreteUniverse(){
-
+    void executeMenAndWomenRatioInAConcreteUniverse(int universeSelector){
+        //var males= db.marvel_dc_characters.find({$and:[{"gender": "Male"},{"universe": "Marvel"}]}).count()
+        //var females= db.marvel_dc_characters.find({$and:[{"gender": "Female"},{"universe": "Marvel"}]}).count()
+        DBObject universe;
+        String selectedUniverse;
+        if(universeSelector == 1){
+            universe = new BasicDBObject("universe", "Marvel");
+            selectedUniverse = "Marvel";
+        }else{
+            universe = new BasicDBObject("universe", "DC");
+            selectedUniverse = "DC Comics";
+        }
+        DBCollection collection = database.getCollection("filteredCharacters");
+        DBObject maleGender = new BasicDBObject("gender", "Male");
+        DBObject femaleGender = new BasicDBObject("gender", "Female");
+        
+        List<DBObject> criteria = new ArrayList<DBObject>();  
+        criteria.add(maleGender);
+        criteria.add(universe);
+        DBCursor dbCursor = collection.find(new BasicDBObject("$and", criteria));
+        int males = dbCursor.size();
+        criteria.clear();
+        criteria.add(femaleGender);
+        criteria.add(universe);
+        dbCursor = collection.find(new BasicDBObject("$and", criteria));
+        int females = dbCursor.size();
+        double ratio = (double)males/(double)females;
+        DecimalFormat df = new DecimalFormat("####0.00");
+        System.out.println("---------------------------------------------------------");
+        System.out.println("Male characters= " + males + "; Female characters= "+ females);
+        System.out.println("In "+ selectedUniverse+ " there are " + df.format(ratio) +" male characters for every female character");
+        System.out.println("---------------------------------------------------------");
     }
 
     void executeMostHatedCharacter(){

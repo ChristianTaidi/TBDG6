@@ -75,7 +75,9 @@ public class Menu {
                             break;
                         case 5:
                             System.out.println("5.- Show the ratio between men and women in a concrete universe.");
-                            this.queryExecutioner.executeMenAndWomenRatioInAConcreteUniverse();
+                            System.out.println(" -- Enter 1 to choose Marvel as desired universe or other number for DC Comics -- ");
+                            int universe = menuScanner.readInt();
+                            this.queryExecutioner.executeMenAndWomenRatioInAConcreteUniverse(universe);
                             iteration++;
                             break;
                         case 6:
