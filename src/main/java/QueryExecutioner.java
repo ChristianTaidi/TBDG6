@@ -47,7 +47,7 @@ public class QueryExecutioner {
 
             while (finalCursor.hasNext()){
                 DBObject comicResult = finalCursor.next();
-                System.out.println(finalCursor.next().toString());
+                System.out.println(comicResult.toString());
             }
         }
     }
@@ -55,7 +55,7 @@ public class QueryExecutioner {
     void executeEyeColorFrequencies(){
        // db.characters_info.aggregate({$group : { _id: '$EyeColor', count: {$sum : 1}}},{$sort: {count: -1}})
 
-       DBCollection collection = database.getCollection("characters_info");
+       DBCollection collection = database.getCollection("filteredCharacters");
       // DBObject group = new BasicDBObject("$group", new BasicDBObject("_id", "$EyeColor").append("count", new BasicDBObject("$sum", 1)));
       // DBObject sort = new BasicDBObject("$sort", new BasicDBObject("count", -1));
        //AggregationOptions aggregation = newAggregation(group, sort);
@@ -64,7 +64,7 @@ public class QueryExecutioner {
         //System.out.println("Resultado=" + result);
         //}
 
-        DBObject groupFields = new BasicDBObject( "_id", "$EyeColor");
+        DBObject groupFields = new BasicDBObject( "_id", "$eyeColor");
         groupFields.put("count", new BasicDBObject( "$sum", 1));
         DBObject group = new BasicDBObject("$group", groupFields );
         DBObject sortFields = new BasicDBObject("count", -1);
@@ -373,7 +373,7 @@ public class QueryExecutioner {
         database.getCollection("filteredComics").insert(comicList);
         database.getCollection("comics").drop();
         database.getCollection("characters").drop();
-        database.getCollection("characters_info").drop();
+        //database.getCollection("characters_info").drop();
         database.getCollection("characters_stats").drop();
         database.getCollection("charactersToComics").drop();
         database.getCollection("marvel_dc_characters").drop();
