@@ -189,7 +189,27 @@ public class QueryExecutioner {
     }
 
     void executeUniverseWithMostClassicComics(){
-        
+        DBObject yearLimit      = new BasicDBObject("year",new BasicDBObject("$lt","2000"));
+        DBObject matchYearUnder2000 = new BasicDBObject("$match", yearLimit);
+
+        DBObject marvelUniverse = new BasicDBObject("universe", "Marvel");
+        DBObject dcUniverse     = new BasicDBObject("universe", "DC");
+        List<DBObject> universes = new ArrayList<DBObject>();
+        universes.add(marvelUniverse);
+        universes.add(dcUniverse);
+        DBObject matchUniverses = new BasicDBObject();
+        matchUniverses.put("$match", new BasicDBObject("$or", universes));
+
+        List<DBObject> pipeline= new ArrayList();
+        pipeline.add(matchYearUnder2000);
+        pipeline.add(matchUniverses);
+        AggregationOptions aggregationOptions = AggregationOptions.builder().outputMode(AggregationOptions.OutputMode.CURSOR).build();
+        Iterator<DBObject> cursor = database.getCollection("filteredCharacters").aggregate(pipeline,aggregationOptions);
+        System.out.println("---------------------------------------------------------");
+        while(cursor.hasNext()){
+            System.out.println(cursor.next());
+        }
+        System.out.println("---------------------------------------------------------");
     }
 
     void executeAverageIntelligenceHumansVsCyborgs(){
