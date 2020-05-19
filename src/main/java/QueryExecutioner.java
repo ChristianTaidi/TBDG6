@@ -30,7 +30,7 @@ public class QueryExecutioner {
     private DB database;
     public QueryExecutioner(){
         MongoClient mongoClient = new MongoClient("localhost",27017);
-        database = mongoClient.getDB("test");
+        database = mongoClient.getDB("grupo6");
     }
 
     void executeListOfComicsOfACharacter(String charName){
