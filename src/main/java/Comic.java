@@ -5,13 +5,16 @@ public class Comic {
     private Long id;
     private String title;
     private int issueNumber;
+    private String year;
     private List<Long> characterIds;
 
-    public Comic(Long id, String title, int issueNumber, List<Long> characterIds) {
+    public Comic(Long id, String title, int issueNumber, List<Long> characterIds,String year) {
         this.id = id;
         this.title = title;
         this.issueNumber = issueNumber;
         this.characterIds = characterIds;
+        this.year = year;
+        System.out.println(this.year);
     }
 
     public Long getId() {
@@ -20,6 +23,14 @@ public class Comic {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getYear() {
+        return year;
+    }
+
+    public void setYear(String year) {
+        this.year = year;
     }
 
     public String getTitle() {
