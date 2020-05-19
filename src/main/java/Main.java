@@ -26,6 +26,7 @@ import static java.lang.Thread.sleep;
  * Query Lista decreciente de color de ojos ' db.characters_info.aggregate({$group : { _id: '$EyeColor', count: {$sum : 1}}},{$sort: {count: -1}}) '
 
  Personaje mas odiado 'db.filteredCharacters.find({$and:[{"status":"Deceased"},{"appearances":{"$exists":true}}]}).sort({"appearances": 1}).limit(1)'
+ * Publisher con mas personajes calvos 'db.filteredCharacters.aggregate( [ {$match:{$and:[{publisher:{$exists:true}},{$or:[{hairColor:{$eq:"Bald"}},{hairColor:{$eq:"No Hair"}}]}]}},{$group:{_id:{publisher:"$publisher",hair:"$hairColor"},bald:{$sum:1}}},{$sort:{"bald":-1}},{$limit:1}])'
  */
 public class Main {
 

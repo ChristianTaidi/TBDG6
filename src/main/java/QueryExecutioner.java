@@ -101,8 +101,42 @@ public class QueryExecutioner {
     }
 
      void executePublisherWithMostBaldCharacters(){
+         //db.filteredCharacters.aggregate(
+         // [
+         // {$match:{
+         // $and:[
+         // {publisher:{$exists:true}},
+         // {$or:[{hairColor:{$eq:"Bald"}},{hairColor:{$eq:"No Hair"}}]}]}},
+         // {$group:{_id:{publisher:"$publisher",hair:"$hairColor"},bald:{$sum:1}}},
+         // {$sort:{"bald":-1}},
+         // {$limit:1}])
+         DBObject matchFieldsPublisher = new BasicDBObject("publisher",new BasicDBObject("$exists",true));
+         DBObject matchFieldsBald = new BasicDBObject("hairColor",new BasicDBObject("$eq","Bald"));
+         DBObject matchFieldsNoHair = new BasicDBObject("hairColor",new BasicDBObject("$eq","No Hair"));
+         DBObject matchFieldsHairColor = new BasicDBObject("$or",Arrays.asList(matchFieldsBald,matchFieldsNoHair));
+         DBObject matchFields = new BasicDBObject("$and",Arrays.asList(matchFieldsPublisher,matchFieldsHairColor));
+         DBObject match = new BasicDBObject("$match",matchFields);
+         DBObject groupField = new BasicDBObject("_id",new BasicDBObject("publisher","$publisher").append("hair","$hairColor")).append("bald",new BasicDBObject("$sum",1));
+         DBObject group = new BasicDBObject("$group",groupField);
+         DBObject sort = new BasicDBObject("$sort",new BasicDBObject("bald",-1));
+         DBObject limit = new BasicDBObject("$limit",1);
 
-    }
+         List<DBObject> pipeline = new ArrayList<>();
+         pipeline.add(match);
+         pipeline.add(group);
+         pipeline.add(sort);
+         pipeline.add(limit);
+
+         AggregationOptions aggregationOptions = AggregationOptions.builder().outputMode(AggregationOptions.OutputMode.CURSOR).build();
+         Cursor cursor = database.getCollection("filteredCharacters").aggregate(pipeline,aggregationOptions);
+
+         System.out.println("---------------------------------------------------------");
+         while (cursor.hasNext()){
+             System.out.println(cursor.next().toMap());
+         }
+         System.out.println("---------------------------------------------------------");
+
+     }
 
     void executeMenAndWomenRatioInAConcreteUniverse(int universeSelector){
         //var males= db.marvel_dc_characters.find({$and:[{"gender": "Male"},{"universe": "Marvel"}]}).count()
