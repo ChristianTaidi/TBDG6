@@ -207,12 +207,9 @@ public class QueryExecutioner {
         Map<String,Comic> comics = new TreeMap<>();
         Map<String, List<Long>> charactersInComic = new TreeMap<>();
         File inputFolder = new File("personajes/");
-        MongoClient mongoClient = new MongoClient("localhost",27017);
 
-        DB database = mongoClient.getDB("test");
         database.getCollection("filteredCharacters").drop();
         database.getCollection("filteredComics").drop();
-        mongoClient.getDatabaseNames().forEach(System.out::println);
         System.out.println(database.toString());
         CsvSchema csvSchema = CsvSchema.builder().setUseHeader(true).build();
         csvSchema.withColumnSeparator(';');
@@ -328,13 +325,9 @@ public class QueryExecutioner {
                             if(!charactersInComic.containsKey(String.valueOf(id))){
                                 charactersInComic.put(String.valueOf(id),new ArrayList());
                             }
-                            try {
+
                                 charactersInComic.get(String.valueOf(id)).add(Long.parseLong(entry.get("characterID")));
-                            }catch (NullPointerException e){
-                                System.out.println("Character List ->"+charactersInComic.get(String.valueOf(id)));
-                                System.out.println("Character Id -> "+Long.parseLong(entry.get("characterID")));
-                                charactersInComic.get(String.valueOf(id)).add(Long.parseLong(entry.get("characterID")));
-                            }
+
                         });
                     }
 
@@ -386,13 +379,22 @@ public class QueryExecutioner {
                         }
                         current.setFirstAppearance(entry.get("FirstAppearance"));
                         current.setYear(entry.get("Year"));
+                        if(entry.get("Universe").equals("DC")){
+                            current.setPublisher("DC Comics");
+                        }else if(entry.get("Universe").equals("Marvel")){
+                            current.setPublisher("Marvel Comics");
+                        }
+                       // current.setPublisher(entry.get("Universe"));
                         current.setUniverse(entry.get("Universe"));
                         current.setAlignment(entry.get("Alignment"));
                         current.setEyeColor(entry.get("EyeColor"));
                         current.setGender(entry.get("Gender"));
                         current.setRace(entry.get("Race"));
+
                         current.setHairColor(entry.get("HairColor"));
-                        current.setPublisher(entry.get("Publisher"));
+                        if(entry.get("HairColor").equals("Bald")){
+                            current.setHairColor("No Hair");
+                        }
                         current.setSkinColor(entry.get("SkinColor"));
 
                         characters.put(name,current);
