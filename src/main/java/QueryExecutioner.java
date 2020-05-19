@@ -389,17 +389,8 @@ public class QueryExecutioner {
                             }
                             int issueNumber = Integer.parseInt(entry.get("issueNumber"));
                             String title = entry.get("title");
-                            String year =null;
-                            if(title.contains("#")){
-                                String[] arrOfStr = title.split("#", 2);
-                                String yearAux=  arrOfStr[0].substring(arrOfStr[0].length()-7, arrOfStr[0].length()-1);
-                                if(yearAux.contains("(") && yearAux.contains(")")){
-                                    yearAux = yearAux.substring(1, 5);
-                                    //System.out.println("Year= "+yearAux);
-                                    year = yearAux;
-                                }   
-                            }
-                            comics.put(String.valueOf(id),new Comic(id,title,issueNumber,charactersInComic.get(String.valueOf(id)),year));
+                            
+                            comics.put(String.valueOf(id),new Comic(id,title,issueNumber,charactersInComic.get(String.valueOf(id))));
                         });
                     }
                 }

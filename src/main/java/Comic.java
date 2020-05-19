@@ -5,15 +5,26 @@ public class Comic {
     private Long id;
     private String title;
     private int issueNumber;
-    private String year;
+    private int year;
     private List<Long> characterIds;
 
-    public Comic(Long id, String title, int issueNumber, List<Long> characterIds,String year) {
+    public Comic(Long id, String title, int issueNumber, List<Long> characterIds) {
         this.id = id;
         this.title = title;
         this.issueNumber = issueNumber;
         this.characterIds = characterIds;
-        this.year = year;
+        if(title.contains("#")){
+            String[] arrOfStr = title.split("#", 2);
+            String yearAux=  arrOfStr[0].substring(arrOfStr[0].length()-7, arrOfStr[0].length()-1);
+            if(yearAux.contains("(") && yearAux.contains(")")){
+                yearAux = yearAux.substring(1, 5);
+                //System.out.println("Year= "+yearAux);
+                
+                if(yearAux!= null){
+                    this.year= Integer.parseInt(yearAux);
+                }
+            }   
+        }
         System.out.println(this.year);
     }
 
@@ -25,11 +36,11 @@ public class Comic {
         this.id = id;
     }
 
-    public String getYear() {
-        return year;
+    public int getYear() {
+        return this.year;
     }
 
-    public void setYear(String year) {
+    public void setYear(int year) {
         this.year = year;
     }
 
