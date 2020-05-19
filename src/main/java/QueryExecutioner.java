@@ -192,6 +192,33 @@ public class QueryExecutioner {
     }
 
     void executeAverageIntelligenceHumansVsCyborgs(){
+        DBObject humanRace = new BasicDBObject("race", "Human");
+        DBObject cyborgRace = new BasicDBObject("race", "Cyborg");
+        List<DBObject> races = new ArrayList<DBObject>();
+        races.add(humanRace);
+        races.add(cyborgRace);
+        DBObject matchRaces = new BasicDBObject();
+        matchRaces.put("$match", new BasicDBObject("$or", races));
+
+        DBObject groupFields = new BasicDBObject("_id", "$race");
+        groupFields.put("avgIntelligence", new BasicDBObject("$avg", new BasicDBObject("$toInt", "$stats.Intelligence")));
+        DBObject groupRace = new BasicDBObject("$group", groupFields );
+
+        DBObject sort = new BasicDBObject("$sort", new BasicDBObject("count", -1));
+        DBObject limit = new BasicDBObject("$limit", 1 );
+
+        List<DBObject> pipeline= new ArrayList();
+        pipeline.add(matchRaces);
+        pipeline.add(groupRace);
+        pipeline.add(sort);
+        pipeline.add(limit);
+        AggregationOptions aggregationOptions = AggregationOptions.builder().outputMode(AggregationOptions.OutputMode.CURSOR).build();
+        Iterator<DBObject> cursor = database.getCollection("filteredCharacters").aggregate(pipeline,aggregationOptions);
+        System.out.println("---------------------------------------------------------");
+        while(cursor.hasNext()){
+            System.out.println(cursor.next());
+        }
+        System.out.println("---------------------------------------------------------");
     }
 
     void executeFirstCharacterWithSuperpowers(){
