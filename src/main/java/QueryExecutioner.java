@@ -175,12 +175,13 @@ public class QueryExecutioner {
     void executeMostHatedCharacter(){
         BasicDBObject deceased = new BasicDBObject();
         deceased.put("status","Deceased");
-        BasicDBObject exists = new BasicDBObject();
-        exists.put("appearances",new BasicDBObject("$exists",true));
-
+        BasicDBObject existsAppearances = new BasicDBObject();
+        existsAppearances.put("appearances",new BasicDBObject("$exists",true));
+        BasicDBObject existsYear = new BasicDBObject();
+        existsYear.put("year",new BasicDBObject("$exists",true));
         BasicDBObject query = new BasicDBObject();
-        query.put("$and",Arrays.asList(deceased,exists));
-        DBCursor cursor = database.getCollection("filteredCharacters").find(query).sort(new BasicDBObject("appearances",1)).limit(1);
+        query.put("$and",Arrays.asList(deceased,existsAppearances,existsYear));
+        DBCursor cursor = database.getCollection("filteredCharacters").find(query).sort(new BasicDBObject("appearances",1).append("year",1)).limit(1);
 
         if (cursor.hasNext()){
             System.out.println(cursor.next().toString());
@@ -406,13 +407,14 @@ public class QueryExecutioner {
                         }
                         current.setFirstAppearance(entry.get("FirstAppearance"));
                         current.setYear(entry.get("Year"));
-                        if(entry.get("Universe").equals("DC")){
-                            current.setPublisher("DC Comics");
-                        }else if(entry.get("Universe").equals("Marvel")){
+                        if(entry.get("Name").contains("Earth-616")){
                             current.setPublisher("Marvel Comics");
+                            current.setUniverse("Marvel");
+                        }else if(entry.get("Name").contains("New Earth")){
+                            current.setPublisher("DC Comics");
+                            current.setUniverse("DC");
                         }
-                       // current.setPublisher(entry.get("Universe"));
-                        current.setUniverse(entry.get("Universe"));
+
                         current.setAlignment(entry.get("Alignment"));
                         current.setEyeColor(entry.get("EyeColor"));
                         current.setGender(entry.get("Gender"));
