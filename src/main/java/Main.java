@@ -27,6 +27,7 @@ import static java.lang.Thread.sleep;
 
  Personaje mas odiado 'db.filteredCharacters.find({$and:[{"status":"Deceased"},{"appearances":{"$exists":true}}]}).sort({"appearances": 1}).limit(1)'
  * Publisher con mas personajes calvos 'db.filteredCharacters.aggregate( [ {$match:{$and:[{publisher:{$exists:true}},{$or:[{hairColor:{$eq:"Bald"}},{hairColor:{$eq:"No Hair"}}]}]}},{$group:{_id:{publisher:"$publisher",hair:"$hairColor"},bald:{$sum:1}}},{$sort:{"bald":-1}},{$limit:1}])'
+ * Personajes que salen en comics de una saga 'db.filteredComics.aggregate([ {$match:{"title":{$regex:".*Captain America.*"}}}, {$lookup: {from: "filteredCharacters", localField: "characterIds", foreignField: "id", as: "Characters_in_CA"} },{$unwind:"$Characters_in_CA"},{$group:{_id:"$Characters_in_CA.name"}} ]).pretty()'
  */
 public class Main {
 
