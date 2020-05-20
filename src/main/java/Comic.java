@@ -18,14 +18,12 @@ public class Comic {
             String yearAux=  arrOfStr[0].substring(arrOfStr[0].length()-7, arrOfStr[0].length()-1);
             if(yearAux.contains("(") && yearAux.contains(")")){
                 yearAux = yearAux.substring(1, 5);
-                //System.out.println("Year= "+yearAux);
                 
                 if(yearAux!= null){
                     this.year= Integer.parseInt(yearAux);
                 }
             }   
         }
-        System.out.println(this.year);
     }
 
     public Long getId() {

@@ -254,11 +254,82 @@ public class QueryExecutioner {
     }
 
     void executeFirstCharacterWithSuperpowers(){
+        //db.filteredComics.aggregate([{$match:{year:{$exists:true}}},{$sort : { "year" : 1 } },
+        //{$lookup: {from: "filteredCharacters", localField: "characterIds", foreignField: "id", as: "Characters_with_Powers"}},
+        //{ "$addFields": {"Characters_with_Powers": {"$filter": {"input": "$Characters_with_Powers","cond": { $ifNull : ["$$this.powers", null]}}}}},{$limit: 1}]).pretty()
         
+        DBObject existsYear = new BasicDBObject("year",new BasicDBObject("$exists",true));
+        DBObject match = new BasicDBObject("$match",existsYear);
+        DBObject sort = new BasicDBObject("$sort", new BasicDBObject("year", 1));
+        DBObject limit = new BasicDBObject("$limit", 1 );
+        DBObject lookup = new BasicDBObject("$lookup", new BasicDBObject("from","filteredCharacters")
+                                                        .append("localField","characterIds")
+                                                        .append("foreignField","id")
+                                                        .append("as","Characters_with_Powers"));
+        BasicDBList powers = new BasicDBList();
+        powers.add("$$this.powers");
+        powers.add(null);
+        DBObject ifNull = new BasicDBObject("$ifNull", powers);
+        DBObject filter = new BasicDBObject("$filter", new BasicDBObject("input","$Characters_with_Powers") 
+                                                       .append("cond", ifNull));
+        DBObject Characters_with_Powers = new BasicDBObject("Characters_with_Powers",filter);
+        DBObject addFields = new BasicDBObject("$addFields",Characters_with_Powers);
+
+        List<DBObject> pipeline= new ArrayList();
+        pipeline.add(match);
+        pipeline.add(sort);
+        pipeline.add(lookup);
+        pipeline.add(addFields);
+        pipeline.add(limit);
+
+
+
+        AggregationOptions aggregationOptions = AggregationOptions.builder().outputMode(AggregationOptions.OutputMode.CURSOR).build();
+        Iterator<DBObject> cursor = database.getCollection("filteredComics").aggregate(pipeline,aggregationOptions);
+
+
+        System.out.println("---------------------------------------------------------");
+        while(cursor.hasNext()){
+            System.out.println(cursor.next().toMap());
+        }
+        System.out.println("---------------------------------------------------------");
+   
+   
     }
 
-    void executeQueryTBD(){
-        
+    void executeCharactersInSaga(){
+       // db.filteredComics.aggregate([ {$match:{"title":{$regex:".*Captain America.*"}}}, 
+       //{$lookup: {from: "filteredCharacters", localField: "characterIds", foreignField: "id", as: "Characters_in_CA"} } ])
+       //,{$unwind:"$Characters_in_CA"},{$group:{_id:"$Characters_in_CA.name"}} ]).pretty()'
+       DBObject sagaSelector = new BasicDBObject("title",new BasicDBObject("$regex",".*Captain America.*"));
+       DBObject match = new BasicDBObject("$match",sagaSelector);
+       DBObject lookup = new BasicDBObject("$lookup", new BasicDBObject("from","filteredCharacters")
+                                                       .append("localField","characterIds")
+                                                       .append("foreignField","id")
+                                                       .append("as","Characters_in_CA"));
+       DBObject unwind = new BasicDBObject("$unwind","$Characters_in_CA");
+       DBObject group = new BasicDBObject("$group",new BasicDBObject("_id","$Characters_in_CA.name"));
+
+
+
+       List<DBObject> pipeline= new ArrayList();
+       pipeline.add(match);
+       pipeline.add(lookup);
+       pipeline.add(unwind);
+       pipeline.add(group);
+
+
+       AggregationOptions aggregationOptions = AggregationOptions.builder().outputMode(AggregationOptions.OutputMode.CURSOR).build();
+       Iterator<DBObject> cursor = database.getCollection("filteredComics").aggregate(pipeline,aggregationOptions);
+
+
+       System.out.println("---------------------------------------------------------");
+       while(cursor.hasNext()){
+           System.out.println(cursor.next().toMap());
+       }
+       System.out.println("---------------------------------------------------------");     
+    
+    
     }
 
     public void dumpData(){
