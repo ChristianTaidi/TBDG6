@@ -212,14 +212,25 @@ public class QueryExecutioner {
         System.out.println("---------------------------------------------------------");
     }
 
-    void executeAverageIntelligenceHumansVsCyborgs(){
-        DBObject humanRace = new BasicDBObject("race", "Human");
-        DBObject cyborgRace = new BasicDBObject("race", "Cyborg");
+    void executeAllRaces(){
+        List<String> cursor = database.getCollection("filteredCharacters").distinct("race");
+        System.out.println("*** Razas existentes***");
+        for (String dbObject : cursor) {
+            System.out.println(dbObject);
+        }
+        System.out.println("*******************");
+    }
+
+    void executeAverageIntelligence(String race1, String race2){
+        DBObject fieldRace1 = new BasicDBObject("race", race1);
+        DBObject fieldRace2 = new BasicDBObject("race", race2);
         List<DBObject> races = new ArrayList<DBObject>();
-        races.add(humanRace);
-        races.add(cyborgRace);
+        races.add(fieldRace1);
+        races.add(fieldRace2);
+        DBObject existStats = new BasicDBObject("stats.Intelligence",new BasicDBObject("$exists",true));
         DBObject matchRaces = new BasicDBObject();
-        matchRaces.put("$match", new BasicDBObject("$or", races));
+        matchRaces.put("$or", races);
+        DBObject matchQuery = new BasicDBObject("$match",new BasicDBObject("$and",Arrays.asList(existStats,matchRaces)));
 
         DBObject groupFields = new BasicDBObject("_id", "$race");
         groupFields.put("avgIntelligence", new BasicDBObject("$avg", new BasicDBObject("$toInt", "$stats.Intelligence")));
@@ -229,7 +240,7 @@ public class QueryExecutioner {
         DBObject limit = new BasicDBObject("$limit", 1 );
 
         List<DBObject> pipeline= new ArrayList();
-        pipeline.add(matchRaces);
+        pipeline.add(matchQuery);
         pipeline.add(groupRace);
         pipeline.add(sort);
         pipeline.add(limit);

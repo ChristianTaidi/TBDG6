@@ -1,5 +1,3 @@
-import java.util.InputMismatchException;
-
 public class Menu {
     private QueryExecutioner queryExecutioner;
     private int number;
@@ -91,8 +89,16 @@ public class Menu {
                             iteration++;
                             break;
                         case 8:
-                            System.out.println("8.- Show who has a higher average intelligence, humans or cyborgs.");
-                            this.queryExecutioner.executeAverageIntelligenceHumansVsCyborgs();
+                            System.out.println("8.- Show who has a higher average intelligence.");
+                            this.queryExecutioner.executeAllRaces();
+                            System.out.println("Introduzca una raza");
+                            String race1 = menuScanner.readString();
+                            String race2;
+                            do {
+                                System.out.println("Introduzca otra raza");
+                                race2 = menuScanner.readString();
+                            }while (race1.equals(race2));
+                            this.queryExecutioner.executeAverageIntelligence(race1,race2);
                             iteration++;
                             break;
                         case 9:
