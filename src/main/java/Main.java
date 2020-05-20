@@ -31,7 +31,12 @@ import static java.lang.Thread.sleep;
  * En concreto comics de Capitan America
  * Personajes que salen en comics de una saga 'db.filteredComics.aggregate([ {$match:{"title":{$regex:".*Captain America.*"}}}, {$lookup: {from: "filteredCharacters", localField: "characterIds", foreignField: "id", as: "Characters_in_CA"} },{$unwind:"$Characters_in_CA"},{$group:{_id:"$Characters_in_CA.name"}} ]).pretty()'
     "" con comics en los que aparecen 'db.filteredComics.aggregate([ {$match:{"title":{$regex:".*Captain America.*"}}}, {$lookup: {from: "filteredCharacters", localField: "characterIds", foreignField: "id", as: "Characters_in_CA"} } ]).pretty()'
- */
+ 
+* Query 9 : Primeros personajes en aparecer en un comic.
+* db.filteredComics.aggregate([{$match:{year:{$exists:true}}},{$sort : { "year" : 1 } },{$lookup: {from: "filteredCharacters", localField: "characterIds", foreignField: "id", as: "Characters_in_Comics"}},{ "$addFields": {"Characters_in_Comics": {"$filter": {"input": "$Characters_in_Comics","cond": { $ifNull : ["$$this.powers", null]}}}}},{$limit: 1}]).pretty()
+*
+*
+    */
 public class Main {
 
 

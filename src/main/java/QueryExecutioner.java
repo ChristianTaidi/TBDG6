@@ -389,6 +389,7 @@ public class QueryExecutioner {
                             }
                             int issueNumber = Integer.parseInt(entry.get("issueNumber"));
                             String title = entry.get("title");
+                            
                             comics.put(String.valueOf(id),new Comic(id,title,issueNumber,charactersInComic.get(String.valueOf(id))));
                         });
                     }
@@ -499,7 +500,8 @@ public class QueryExecutioner {
             oMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
             oMapper.setSerializationInclusion(JsonInclude.Include.NON_DEFAULT);
             try {
-                comicList.add(new BasicDBObject((BasicDBObject)JSON.parse(oMapper.writeValueAsString(s))));
+                BasicDBObject obj =(BasicDBObject)JSON.parse(oMapper.writeValueAsString(s));
+                comicList.add(obj);
             } catch (JsonProcessingException e) {
                 e.printStackTrace();
             }
