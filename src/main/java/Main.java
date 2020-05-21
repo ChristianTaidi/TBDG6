@@ -33,7 +33,7 @@ import static java.lang.Thread.sleep;
     "" con comics en los que aparecen 'db.filteredComics.aggregate([ {$match:{"title":{$regex:".*Captain America.*"}}}, {$lookup: {from: "filteredCharacters", localField: "characterIds", foreignField: "id", as: "Characters_in_CA"} } ]).pretty()'
  
 * Query 9 : Primeros personajes en aparecer en un comic.
-* db.filteredComics.aggregate([{$match:{year:{$exists:true}}},{$sort : { "year" : 1 } },{$lookup: {from: "filteredCharacters", localField: "characterIds", foreignField: "id", as: "Characters_in_Comics"}},{ "$addFields": {"Characters_in_Comics": {"$filter": {"input": "$Characters_in_Comics","cond": { $ifNull : ["$$this.powers", null]}}}}},{$limit: 1}]).pretty()
+* db.filteredComics.aggregate([{$match:{year:{$exists:true}}},{$sort : { "year" : 1 } },{$lookup: {from: "filteredCharacters", localField: "characterIds", foreignField: "id", as: "Characters_with_Powers"}},{ "$addFields": {"Characters_with_Powers": {"$filter": {"input": "$Characters_with_Powers","cond": { $ifNull : ["$$this.powers", null]}}}}},{$limit: 1}]).pretty()
 *
 *
     */

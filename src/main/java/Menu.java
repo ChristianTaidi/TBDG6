@@ -107,8 +107,8 @@ public class Menu {
                             iteration++;
                             break;
                         case 10:
-                            System.out.println("10.- Question TBD.");
-                            this.queryExecutioner.executeQueryTBD();
+                            System.out.println("10.- Characters who appear in a saga (CapitanAmérica) .");
+                            this.queryExecutioner.executeCharactersInSaga();
                             iteration++;
                             break;
                         case 11:
