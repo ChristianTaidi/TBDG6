@@ -22,7 +22,7 @@ public class Menu {
         System.out.println("10.- Show the characters that appear in a Saga (Ex: Avengers)");
         System.out.println("11.- Dump Data to Mongo");
         System.out.println("---------------------------------------------------------");
-        System.out.println("Introduce the number corresponding to your desired query:");
+        System.out.println("Enter the number corresponding to your desired query:");
     }
 
     public void selectQuery(){
@@ -32,17 +32,19 @@ public class Menu {
             int iteration = 0;
             boolean shouldEnd = false;
             MenuScanner menuScanner = new MenuScanner();
+            imprimirMenu();
+
             do {
-                if(iteration>0){
-                    displayMenu = menuScanner.readContinue();
-                    
-                    if(displayMenu.equals("n")){
-                        shouldEnd = true;
-                        option = 0;
-                    }
-                }
-                if(!shouldEnd){
-                    imprimirMenu();
+//                if(iteration>0){
+//                    displayMenu = menuScanner.readContinue();
+//
+//                    if(displayMenu.equals("n")){
+//                        shouldEnd = true;
+//                        option = 0;
+//                    }
+//                }
+                //if(!shouldEnd){
+                System.out.println("Enter 13 to show menu");
                         option = menuScanner.readInt();
                     switch (option) {
                         case 0:
@@ -50,6 +52,9 @@ public class Menu {
                             iteration++;
                             break;
                         case 1:
+                            System.out.println("****** Characters ******");
+                            this.queryExecutioner.characterList();
+                            System.out.println("************************");
                             System.out.println("1.- Show a list of comics where a selected character appears.");
                             System.out.println(" -- Enter the name of the character to look for");
                             String charName = menuScanner.readString();
@@ -118,9 +123,9 @@ public class Menu {
                             queryExecutioner.dumpData();
                             break;
                         default:
-                            System.out.println("No query has been selected");
+                            imprimirMenu();
                         }
-                    }
+                    //}
            }while (option != 0) ;
         // }catch (InputMismatchException e) {
         //     System.out.println("Please introduce a number next time");

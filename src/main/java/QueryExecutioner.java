@@ -57,6 +57,13 @@ public class QueryExecutioner {
         }
     }
 
+    void characterList(){
+        List<String> characters = database.getCollection("filteredCharacters").distinct("name");
+        for (String character : characters) {
+            System.out.println(character);
+        }
+    }
+
     void executeEyeColorFrequencies(){
         //db.characters_info.aggregate({$group : { _id: '$EyeColor', count: {$sum : 1}}},{$sort: {count: -1}})
         DBCollection collection = database.getCollection("filteredCharacters");
