@@ -19,7 +19,7 @@ public class Menu {
         System.out.println("7.- Show which universe has more classic comics (the ones that have characters existing before the year 2000), Marvel or DC Comics.");
         System.out.println("8.- Show who has a higher average intelligence, humans or cyborgs.");
         System.out.println("9.- Show who is the first character to appear with superpowers in a comic.");
-        System.out.println("10.- Question TBD.");
+        System.out.println("10.- Show the characters that appear in a Saga (Ex: Avengers)");
         System.out.println("11.- Dump Data to Mongo");
         System.out.println("---------------------------------------------------------");
         System.out.println("Introduce the number corresponding to your desired query:");
