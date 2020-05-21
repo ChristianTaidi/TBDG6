@@ -91,11 +91,11 @@ public class Menu {
                         case 8:
                             System.out.println("8.- Show who has a higher average intelligence.");
                             this.queryExecutioner.executeAllRaces();
-                            System.out.println("Introduzca una raza");
+                            System.out.println("Enter a race");
                             String race1 = menuScanner.readString();
                             String race2;
                             do {
-                                System.out.println("Introduzca otra raza");
+                                System.out.println("Enter another race");
                                 race2 = menuScanner.readString();
                             }while (race1.equals(race2));
                             this.queryExecutioner.executeAverageIntelligence(race1,race2);
@@ -107,8 +107,10 @@ public class Menu {
                             iteration++;
                             break;
                         case 10:
-                            System.out.println("10.- Characters who appear in a saga (CapitanAmérica) .");
-                            this.queryExecutioner.executeCharactersInSaga();
+                            System.out.println("10.- Characters who appear in a saga.");
+                            System.out.println("Enter the name of a saga (Ex: Wolverine)");
+                            String saga = menuScanner.readString();
+                            this.queryExecutioner.executeCharactersInSaga(saga);
                             iteration++;
                             break;
                         case 11:

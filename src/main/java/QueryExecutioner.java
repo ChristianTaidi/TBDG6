@@ -21,6 +21,7 @@ import java.nio.file.Paths;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 import static java.lang.Thread.sleep;
@@ -297,11 +298,11 @@ public class QueryExecutioner {
    
     }
 
-    void executeCharactersInSaga(){
-       // db.filteredComics.aggregate([ {$match:{"title":{$regex:".*Captain America.*"}}}, 
+    void executeCharactersInSaga(String saga){
+       // db.filteredComics.aggregate([ {$match:{"title":{$regex:".*Captain America.*"}}},
        //{$lookup: {from: "filteredCharacters", localField: "characterIds", foreignField: "id", as: "Characters_in_CA"} } ])
        //,{$unwind:"$Characters_in_CA"},{$group:{_id:"$Characters_in_CA.name"}} ]).pretty()'
-       DBObject sagaSelector = new BasicDBObject("title",new BasicDBObject("$regex",".*Captain America.*"));
+       DBObject sagaSelector = new BasicDBObject("title",new BasicDBObject("$regex",Pattern.compile("^"+saga +" \\([0-9]+\\) ")));
        DBObject match = new BasicDBObject("$match",sagaSelector);
        DBObject lookup = new BasicDBObject("$lookup", new BasicDBObject("from","filteredCharacters")
                                                        .append("localField","characterIds")
