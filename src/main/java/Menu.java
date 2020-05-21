@@ -16,7 +16,7 @@ public class Menu {
         System.out.println("4.- Show the publisher with the highest number of bald characters.");
         System.out.println("5.- Show the ratio between men and women in a concrete universe.");
         System.out.println("6.- Show the most hated character: The oldest one, being dead and with the least appearances.");
-        System.out.println("7.- Show which universe has more classic comics (the ones that have characters existing before the year 2000), Marvel or DC Comics.");
+        System.out.println("7.- Show the tallest character of a comic.");
         System.out.println("8.- Show who has a higher average intelligence, humans or cyborgs.");
         System.out.println("9.- Show who is the first character to appear with superpowers in a comic.");
         System.out.println("10.- Show the characters that appear in a Saga (Ex: Avengers)");
@@ -89,8 +89,10 @@ public class Menu {
                             iteration++;
                             break;
                         case 7:
-                            System.out.println("7.- Show which universe has more classic comics (the ones that have characters existing before the year 2000), Marvel or DC Comics.");
-                            this.queryExecutioner.executeUniverseWithMostClassicComics();
+                            System.out.println("7.- Show the tallest character of a comic.");
+                            System.out.println("Enter the title of a comic");
+                            String comic = menuScanner.readString();
+                            this.queryExecutioner.executeTallestInAComic(comic);
                             iteration++;
                             break;
                         case 8:

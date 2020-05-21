@@ -5,11 +5,7 @@ import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvParser;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import com.mongodb.*;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.model.Indexes;
 import com.mongodb.util.JSON;
-
-import org.bson.Document;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -196,49 +192,36 @@ public class QueryExecutioner {
         }
     }
 
-    void executeUniverseWithMostClassicComics(){
-        //db.filteredCharacters.aggregate([
-        // {
-        //  $match:{
-        //      $and:[
-        //          {$or:[{publisher:"Marvel Comics"},{publisher:"DC Comics"}]},
-        //          {publisher:{$exists:true}},
-        //          {year:{"$lt":"2000"}}
-        //       ]
-        //   }
-        //   },
-        //   {
-        //   $group:{
-        //      _id:{publisher:"$publisher"},
-        //      classics:{$sum:1}}
-        //   },
-        //   {
-        //   $sort:{"classics":-1}}
-        // ]).pretty()
+    void executeTallestInAComic(String comicName){
+        //db.filteredComics.aggregate([ {$match:{title:"Marvel Comics (1939) #1"}},{$lookup:{from:"filteredCharacters",localField:"characterIds",foreignField:"id",as:"characters"}},
+        // {$unwind:"$characters"},{$sort:{"characters.height":-1}},{$limit:1},{$project:{"characters.name":1,"characters.race":1,"characters.height":1}}]).pretty()
 
-        DBObject marvelPublisher = new BasicDBObject("publisher", "Marvel Comics");
-        DBObject dcPublisher     = new BasicDBObject("publisher", "DC Comics");
-        DBObject universes = new BasicDBObject("$or",Arrays.asList(marvelPublisher,dcPublisher));
+        DBObject comicTitle = new BasicDBObject("title",comicName);
+        DBObject matchTitle = new BasicDBObject("$match",comicTitle);
 
-        DBObject publisherExists = new BasicDBObject("publisher",new BasicDBObject("$exists",true));
+        DBObject lookup = new BasicDBObject("$lookup", new BasicDBObject("from","filteredCharacters")
+                .append("localField","characterIds")
+                .append("foreignField","id")
+                .append("as","characters"));
 
-        DBObject yearClassic = new BasicDBObject("year",new BasicDBObject("$lt","2000"));
-
-        DBObject match = new BasicDBObject("$match",new BasicDBObject("$and",Arrays.asList(universes,publisherExists,yearClassic)));
-
-        DBObject groupField = new BasicDBObject("_id","$publisher").append("classics",new BasicDBObject("$sum",1));
-        DBObject group = new BasicDBObject("$group",groupField);
-
-        DBObject sort = new BasicDBObject("$sort",new BasicDBObject("classics",-1));
+        DBObject unwind = new BasicDBObject("$unwind","$characters");
+        DBObject sort = new BasicDBObject("$sort",new BasicDBObject("characters.height",-1));
         DBObject limit = new BasicDBObject("$limit",1);
+        DBObject project = new BasicDBObject("$project",new BasicDBObject("characters.name",1)
+                .append("characters.race",1)
+                .append("characters.height",1));
 
         List<DBObject> pipeline= new ArrayList();
-        pipeline.add(match);
-        pipeline.add(group);
+
+        pipeline.add(matchTitle);
+        pipeline.add(lookup);
+        pipeline.add(unwind);
         pipeline.add(sort);
         pipeline.add(limit);
+        pipeline.add(project);
+
         AggregationOptions aggregationOptions = AggregationOptions.builder().outputMode(AggregationOptions.OutputMode.CURSOR).build();
-        Iterator<DBObject> cursor = database.getCollection("filteredCharacters").aggregate(pipeline,aggregationOptions);
+        Iterator<DBObject> cursor = database.getCollection("filteredComics").aggregate(pipeline,aggregationOptions);
         System.out.println("---------------------------------------------------------");
         while(cursor.hasNext()){
             System.out.println(cursor.next());
@@ -288,6 +271,7 @@ public class QueryExecutioner {
     }
 
     void executeFirstCharacterWithSuperpowers(){
+        //db.filteredComics.aggregate([{$match:{year:{$exists:true}}},{$sort : { "year" : 1 } },{$lookup: {from: "filteredCharacters", localField: "characterIds", foreignField: "id", as: "Characters_with_Powers"}},{ "$addFields": {"Characters_with_Powers": {"$filter": {"input": "$Characters_with_Powers","cond": { $ifNull : ["$$this.powers", null]}}}}},{$limit: 1}]).pretty()
         //db.filteredComics.aggregate([{$match:{year:{$exists:true}}},{$sort : { "year" : 1 } },
         //{$lookup: {from: "filteredCharacters", localField: "characterIds", foreignField: "id", as: "Characters_with_Powers"}},
         //{ "$addFields": {"Characters_with_Powers": {"$filter": {"input": "$Characters_with_Powers","cond": { $ifNull : ["$$this.powers", null]}}}}},{$limit: 1}]).pretty()
@@ -432,8 +416,8 @@ public class QueryExecutioner {
                                 current.setSkinColor(entry.get("SkinColor"));
                                 String height = entry.get("Height");
                                 try {
-                                    current.setHeight(Float.valueOf(entry.get("Height")));
-                                    current.setWeight(Float.valueOf(entry.get("Weight")));
+                                    current.setHeight(Math.abs(Float.valueOf(entry.get("Height"))));
+                                    current.setWeight(Math.abs(Float.valueOf(entry.get("Weight"))));
                                 }catch (NumberFormatException e){
                                     System.out.println(height);
                                 }
