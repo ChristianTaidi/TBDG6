@@ -23,7 +23,7 @@ import static java.lang.Thread.sleep;
 /**
  * Query personajes de DC con Telekinesis 'db.filteredCharactes.find({$and:[{"publisher": "DC Comics"},{"powers": {$in: ["Telekinesis"]}}]}).pretty()'
  * Query comic con mas personajes ' db.filteredComics.aggregate([ {$unwind: "$characterIds"}, { $group: { _id : "$title", len: {$sum : 1} } }, { $sort : { len : -1 }}, { $limit : 25 } ])'
- * Query Lista decreciente de color de ojos ' db.characters_info.aggregate({$group : { _id: '$EyeColor', count: {$sum : 1}}},{$sort: {count: -1}}) '
+ * Query Lista decreciente de color de ojos '  db.filteredCharacters.aggregate([{"$match":{"eyeColor":{"$exists":true,"$ne":null,"$ne":"-"}}},{$group : { _id: '$eyeColor', count: {$sum : 1}}},{$sort: {count: -1}}]) '
 
  Personaje mas odiado 'db.filteredCharacters.find({$and:[{"status":"Deceased"},{"appearances":{"$exists":true}}]}).sort({"appearances": 1}).limit(1)'
  * Publisher con mas personajes calvos 'db.filteredCharacters.aggregate( [ {$match:{$and:[{publisher:{$exists:true}},{$or:[{hairColor:{$eq:"Bald"}},{hairColor:{$eq:"No Hair"}}]}]}},{$group:{_id:{publisher:"$publisher",hair:"$hairColor"},bald:{$sum:1}}},{$sort:{"bald":-1}},{$limit:1}])'
@@ -36,7 +36,7 @@ import static java.lang.Thread.sleep;
 * db.filteredComics.aggregate([{$match:{year:{$exists:true}}},{$sort : { "year" : 1 } },{$lookup: {from: "filteredCharacters", localField: "characterIds", foreignField: "id", as: "Characters_with_Powers"}},{ "$addFields": {"Characters_with_Powers": {"$filter": {"input": "$Characters_with_Powers","cond": { $ifNull : ["$$this.powers", null]}}}}},{$limit: 1}]).pretty()
 *
 *
-    */
+*/
 public class Main {
 
 

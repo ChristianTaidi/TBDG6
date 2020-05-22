@@ -61,14 +61,18 @@ public class QueryExecutioner {
     }
 
     void executeEyeColorFrequencies(){
-        //db.characters_info.aggregate({$group : { _id: '$EyeColor', count: {$sum : 1}}},{$sort: {count: -1}})
+        // db.filteredCharacters.aggregate([{"$match":{"eyeColor":{"$exists":true,"$ne":null,"$ne":"-"}}},{$group : { _id: '$eyeColor', count: {$sum : 1}}},{$sort: {count: -1}}])
         DBCollection collection = database.getCollection("filteredCharacters");
         DBObject groupFields = new BasicDBObject( "_id", "$eyeColor");
         groupFields.put("count", new BasicDBObject( "$sum", 1));
+        DBObject eyeColorConds = new BasicDBObject("$exists", true).append("$ne", null).append("$ne", "-");
+        DBObject eyeColor = new BasicDBObject("eyeColor", eyeColorConds);
+        DBObject match = new BasicDBObject("$match",eyeColor);
         DBObject group = new BasicDBObject("$group", groupFields );
         DBObject sortFields = new BasicDBObject("count", -1);
         DBObject sort = new BasicDBObject("$sort", sortFields );
         List<DBObject> pipeline= new ArrayList();
+        pipeline.add(match);
         pipeline.add(group);
         pipeline.add(sort);
         AggregationOptions aggregationOptions = AggregationOptions.builder().outputMode(AggregationOptions.OutputMode.CURSOR).build();
